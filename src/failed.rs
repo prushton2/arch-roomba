@@ -26,7 +26,6 @@ pub mod journal {
             Err(_) => return false
         };
 
-        println!("{:?}", &out.);
-        return true;
+        return String::from_utf8_lossy(&out.stdout).split("\n").count() <= 1;
     }
 }
