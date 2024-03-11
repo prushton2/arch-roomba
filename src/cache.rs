@@ -1,6 +1,6 @@
 use crate::display::RoombaDisplay;
 use std::process::Command;
-use std::env;
+use std::{env, io};
 
 pub struct Cache {}
 
@@ -30,11 +30,24 @@ impl RoombaDisplay for Cache {
     }
 
     fn detail(&self) -> String {
-        let out = Command::new("systemctl")
-                .arg("--failed")
-                .output()
-                .unwrap();
-        return String::from_utf8_lossy(&out.stdout).to_string();
+
+        println!("Clear the cache?");
+
+        let stdin = io::stdin();
+        let mut buffer = String::from("");
+        stdin.read_line(&mut buffer);
+
+        if buffer.chars().nth(0).unwrap() == 'y' {
+            let out = match Command::new("rm")
+                    .arg("-rf")
+                    .arg(format!("{}/.cache", env::home_dir().unwrap().display()))
+                    .output() 
+            {
+                Ok(c) => c,
+                Err(_) => return "Err".to_string(),
+            };
+        }
+        return "Ok".to_string();
     }
 }
 
