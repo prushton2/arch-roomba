@@ -14,16 +14,16 @@ impl RoombaDisplay for Systemd {
         return String::from("Systemd");
     }
 
-    fn status(&self) -> bool {
+    fn status(&self) -> String {
         let out = match Command::new("systemctl")
                 .arg("--failed")
                 .output() 
         {
             Ok(c) => c,
-            Err(_) => return false,
+            Err(_) => return "Err".to_string(),
         };
         let string = String::from_utf8_lossy(&out.stdout);
-        return &string[36..37] == "0";
+        return if &string[36..37] == "0" {"Ok".to_string()} else {"Err".to_string()};
     }
 
     fn detail(&self) -> String {
@@ -49,17 +49,17 @@ impl RoombaDisplay for Journal {
         return String::from("Journal");
     }
 
-    fn status(&self) -> bool {
+    fn status(&self) -> String {
         let out = match Command::new("journalctl")
                 .arg("-p 3")
                 .arg("-xb")
                 .output()
         {
             Ok(c) => c,
-            Err(_) => return false
+            Err(_) => return "Err".to_string()
         };
 
-        return String::from_utf8_lossy(&out.stdout).split("\n").count() <= 1;
+        return if String::from_utf8_lossy(&out.stdout).split("\n").count() <= 1 {"Ok".to_string()} else {"Err".to_string()};
     }
 
     fn detail(&self) -> String {

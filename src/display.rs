@@ -2,6 +2,6 @@
 
 pub trait RoombaDisplay {
     fn name(&self) -> String;
-    fn status(&self) -> bool;
+    fn status(&self) -> String;
     fn detail(&self) -> String;
 }

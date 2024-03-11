@@ -1,26 +1,27 @@
-//mod cache;
+mod cache;
 mod failed;
 //mod pacman;
 mod display;
 
 use crate::failed::{Systemd, Journal};
+use crate::cache::{Cache};
 use crate::display::RoombaDisplay;
 
 use std::io;
 
 fn main() {
 
-    let elements: [Box<dyn RoombaDisplay>; 2] = [Box::new(Systemd::new()), Box::new(Journal::new())];
+    let elements: [Box<dyn RoombaDisplay>; 3] = [Box::new(Systemd::new()), Box::new(Journal::new()), Box::new(Cache::new())];
     while true {
         let selection: usize = top_interface(&elements);
         println!("{}", elements[selection].detail());
     }
 }
 
-fn top_interface(elements: &[Box<dyn RoombaDisplay>; 2]) -> usize {
+fn top_interface(elements: &[Box<dyn RoombaDisplay>; 3]) -> usize {
     for i in 0..elements.len() {
         let element = &elements[i];
-        println!("[{}] {}: {}", i, element.name(), if element.status(){ "Ok" } else { "Err" } );
+        println!("[{}] {}: {}", i, element.name(), element.status());
     }
 
     let stdin = io::stdin();
