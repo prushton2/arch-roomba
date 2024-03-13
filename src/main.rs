@@ -12,7 +12,13 @@ use std::io;
 
 fn main() {
 
-    let elements: [Box<dyn RoombaDisplay>; 5] = [Box::new(Systemd::new()), Box::new(Journal::new()), Box::new(Cache::new()), Box::new(PackageManager::new("pacman", "Pacman")), Box::new(PackageManager::new("paru", "Paru"))];
+    let elements: [Box<dyn RoombaDisplay>; 5] = [
+        Box::new(Systemd::new()), 
+        Box::new(Journal::new()), 
+        Box::new(Cache::new()), 
+        Box::new(PackageManager::new("pacman", "Pacman")), 
+        Box::new(PackageManager::new("paru", "Paru"))
+    ];
 
     loop {
         let selection: usize = top_interface(&elements);
@@ -20,7 +26,9 @@ fn main() {
     }
 }
 
-fn top_interface(elements: &[Box<dyn RoombaDisplay>; 5]) -> usize {
+//returns index of element to run
+fn top_interface(elements: &[Box<dyn RoombaDisplay>]) -> usize { 
+    println!("[`] Exit");
     for i in 0..elements.len() {
         let element = &elements[i];
         println!("[{}] {}: {}", i, element.name(), element.status());
@@ -33,9 +41,13 @@ fn top_interface(elements: &[Box<dyn RoombaDisplay>; 5]) -> usize {
         buffer = String::from("");
         let _ = stdin.read_line(&mut buffer);
         
+        if &buffer[0..1] == "`" {
+            std::process::exit(1);
+        }
+
         match &buffer[0..buffer.len()-1].parse::<usize>() {
             Ok(c) => return *c,
-            Err(c) => println!("{}", c),
+            Err(c) => println!("{}", c)
         }
     }
 }
